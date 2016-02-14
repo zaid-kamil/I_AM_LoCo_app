@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="com.xaidworkz.www.i_am_loco_app.activities.SearchActivity">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:context="com.xaidworkz.www.i_am_loco_app.activities.SearchActivity"
+        tools:showIn="@layout/activity_search">
+
+        <com.arlib.floatingsearchview.FloatingSearchView
+            android:id="@+id/floating_search_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:floatingSearch_dismissOnOutsideTouch="true"
+            app:floatingSearch_leftActionMode="showHamburger"
+            app:floatingSearch_searchBarMarginLeft="@dimen/default_gap"
+            app:floatingSearch_searchBarMarginRight="@dimen/default_gap"
+
+            app:floatingSearch_searchBarMarginTop="@dimen/default_gap"
+            app:floatingSearch_searchHint="Search..."
+            app:floatingSearch_showSearchKey="false" />
+    </RelativeLayout>
+
+
+</android.support.design.widget.CoordinatorLayout>

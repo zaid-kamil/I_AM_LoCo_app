@@ -1,0 +1,62 @@
+{
+  "project_info": {
+    "project_id": "imloco-7315",
+    "project_number": "661465705597",
+    "name": "imloco"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:661465705597:android:07322013030ab75f",
+        "client_id": "android:com.xaidworkz.www.i_am_loco_app",
+        "client_type": 1,
+        "android_client_info": {
+          "package_name": "com.xaidworkz.www.i_am_loco_app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "661465705597-guh6ka4j4nmc7q1fgpams6hd4ul87o77.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.xaidworkz.www.i_am_loco_app",
+            "certificate_hash": "BE9DFEF48816FEC1ABCFF6AC36D25BEA65C2A468"
+          }
+        },
+        {
+          "client_id": "661465705597-8ussq96ebr1mses0cinmqi72bn75karf.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "cloud_messaging_service": {
+          "status": 2,
+          "apns_config": []
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "661465705597-8ussq96ebr1mses0cinmqi72bn75karf.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "google_signin_service": {
+          "status": 2
+        },
+        "ads_service": {
+          "status": 2,
+          "test_banner_ad_unit_id": "ca-app-pub-3940256099942544/6300978111",
+          "test_interstitial_ad_unit_id": "ca-app-pub-3940256099942544/1033173712"
+        }
+      }
+    }
+  ],
+  "client_info": [],
+  "ARTIFACT_VERSION": "1"
+}

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="220dp"
+    android:layout_height="220dp">
+    <!--app:cardBackgroundColor="#0000"
+    app:cardElevation="1dp"
+    app:cardPreventCornerOverlap="false"-->
+    <ImageView
+        android:id="@+id/item_image1"
+        style="@style/ripple_effect_basic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/thumb2" />
+
+    <ImageView
+        android:id="@+id/item_ic_info"
+        style="@style/ripple_effect_basic"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="top|right"
+        android:padding="4dp"
+        android:src="@android:drawable/ic_menu_info_details" />
+
+    <TextView
+        android:id="@+id/item_text1"
+        style="@style/ripple_effect_basic"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:padding="@dimen/default_gap"
+        android:text="image1"
+        android:textColor="#fff" />
+
+</FrameLayout>
