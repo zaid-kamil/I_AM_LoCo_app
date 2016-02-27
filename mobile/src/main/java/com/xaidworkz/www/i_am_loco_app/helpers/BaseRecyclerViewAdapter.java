@@ -1,17 +1,12 @@
 package com.xaidworkz.www.i_am_loco_app.helpers;
 
 import android.content.Context;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
 
 import com.squareup.picasso.Picasso;
-import com.xaidworkz.www.i_am_loco_app.R;
-import com.xaidworkz.www.i_am_loco_app.fragments.DetailFragment;
 
 import java.util.List;
 
@@ -47,7 +42,7 @@ public class BaseRecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
         final String text = data.getTextProfileName();
         Picasso.with(context).load(image).fit().into(holder.image);
         holder.text.setText(text);
-        holder.text.setOnClickListener(new View.OnClickListener() {
+        /*holder.text.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 showDescritionDialog(holder, position,data);
@@ -58,19 +53,19 @@ public class BaseRecyclerViewAdapter extends RecyclerView.Adapter<ViewHolder> {
             public void onClick(View v) {
                 showDescritionDialog(holder, position,data);
             }
-        });
+        });*/
 
 
     }
 
-    private void showDescritionDialog(ViewHolder holder, int i, JobsHolder data) {
+    /*private void showDescritionDialog(ViewHolder holder, int i, JobsHolder data) {
         FragmentManager manager = activity.getSupportFragmentManager();
         FragmentTransaction transaction = manager.beginTransaction();
         transaction.setCustomAnimations(R.anim.slide_in_up, R.anim.slide_out_down, R.anim.slide_in_up, R.anim.slide_out_down);
         DetailFragment fragment = DetailFragment.newInstance(data);
         transaction.add(R.id.root, fragment).addToBackStack("detail");
         transaction.commit();
-    }
+    }*/
 
     @Override
     public int getItemCount() {

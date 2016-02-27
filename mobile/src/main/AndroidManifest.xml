@@ -2,11 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.xaidworkz.www.i_am_loco_app">
 
-    <!--
-         The ACCESS_COARSE/FINE_LOCATION permissions are not required to use
-         Google Maps Android API v2, but you must specify either coarse or fine
-         location permissions for the 'MyLocation' functionality. 
-    -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- To auto-complete the email text field in the login form with the user's emails -->
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
@@ -21,8 +16,6 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
-
-    <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
 
     <uses-feature
         android:glEsVersion="0x00020000"
@@ -106,7 +99,7 @@
             android:screenOrientation="userPortrait"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".activities.JobHistoryActivity"
+            android:name=".activities.UserJobsActivity"
             android:label="@string/title_activity_job_history"
             android:screenOrientation="userPortrait"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -115,7 +108,6 @@
             android:label="@string/title_activity_chat"
             android:screenOrientation="userPortrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <activity
             android:name=".activities.LauncherActivity"
             android:launchMode="singleInstance"
@@ -133,8 +125,6 @@
             android:launchMode="singleInstance"
             android:screenOrientation="userPortrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
-
         <activity
             android:name=".activities.SignUpActivity"
             android:label="@string/title_activity_sign_up"
@@ -150,8 +140,19 @@
             android:name="com.google.android.gms.wallet.api.enabled"
             android:value="true" />
 
-        <!--camera-->
+        <!-- camera -->
         <activity android:name="com.desmond.squarecamera.CameraActivity" />
+        <activity
+            android:name=".activities.PaymentActivity"
+            android:label="@string/title_activity_payment"
+            android:parentActivityName=".activities.AddJobActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="com.xaidworkz.www.i_am_loco_app.activities.AddJobActivity" />
+        </activity>
+        <activity android:name=".activities.UsersActivity" />
+        <activity android:name=".activities.JobMapActivity"></activity>
     </application>
 
 </manifest>

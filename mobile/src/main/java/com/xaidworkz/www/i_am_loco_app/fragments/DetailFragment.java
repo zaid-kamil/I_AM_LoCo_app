@@ -1,6 +1,7 @@
 package com.xaidworkz.www.i_am_loco_app.fragments;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -14,10 +15,20 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
+import com.xaidworkz.www.i_am_loco_app.AppConfig;
 import com.xaidworkz.www.i_am_loco_app.R;
-import com.xaidworkz.www.i_am_loco_app.helpers.JobsHolder;
+import com.xaidworkz.www.i_am_loco_app.activities.JobMapActivity;
+import com.xaidworkz.www.i_am_loco_app.database.JobInfo;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+
+import static com.xaidworkz.www.i_am_loco_app.activities.MapActivity.EXTRA_MAP_DEST_LATITUDE;
+import static com.xaidworkz.www.i_am_loco_app.activities.MapActivity.EXTRA_MAP_DEST_LONGITUDE;
+import static com.xaidworkz.www.i_am_loco_app.activities.MapActivity.EXTRA_MAP_HAS_OPTIONAL;
+import static com.xaidworkz.www.i_am_loco_app.activities.MapActivity.EXTRA_MAP_OPT_LATITUDE;
+import static com.xaidworkz.www.i_am_loco_app.activities.MapActivity.EXTRA_MAP_OPT_LONGITUDE;
+import static com.xaidworkz.www.i_am_loco_app.activities.MapActivity.EXTRA_MAP_START_LATITUDE;
+import static com.xaidworkz.www.i_am_loco_app.activities.MapActivity.EXTRA_MAP_START_LONGITUDE;
 
 
 /**
@@ -31,42 +42,66 @@ import de.hdodenhof.circleimageview.CircleImageView;
 public class DetailFragment extends Fragment {
 
 
-    private static JobsHolder data;
+    public static final String JOB_TILE = "jobTile";
+    public static final String JOB_IMAGE_URL = "jobImageUrl";
+    public static final String JOB_MAP_END_LATITUDE = "jobMapEndLatitude";
+    public static final String JOB_MAP_END_LONGITUDE = "jobMapEndLongitude";
+    public static final String JOB_MAP_OPT_DESCRIPTION = "jobMapEndDescription";
+    public static final String JOB_MAP_OPT_LATITUDE = "jobMapOptLatitude";
+    public static final String JOB_MAP_OPT_LONGITUDE = "jobMapOptLongitude";
+    public static final String JOB_IMAGE = "jobImage";
+    public static final String PROFILE_IMAGE = "profileImage";
+    public static final String JOB_DEADLINE = "jobDeadline";
+    public static final String JOB_DEADLINE_TIME = "jobDeadlineTime";
+    public static final String JOB_DATE = "jobDate";
+    public static final String JOB_BUDGET = "jobBudget";
+    public static final String JOB_MAP_START_LATITUDE = "jobMapStartLatitude";
+    public static final String JOB_MAP_START_LONGITUDE = "jobMapStartLongitude";
+    public static final String JOB_MAP_START_DESCRIPTION = "jobMapStartDescription";
+    public static final String PROFILE_NAME = "profileName";
+    private static JobInfo.DataEntity data;
     private OnFragmentInteractionListener mListener;
     private String jobTile;
     private String jobImageUrl;
-    private long jobMapStartPoint;
-    private long jobMapEndPoint;
-    private String jobImage;
-    private long jobMapInterPoint;
-    private String profileImage;
+
     private String jobDate;
-    private float jobBudget;
-    private String jobDescription;
+    private String jobBudget;
+
     private String profileName;
-    private int jobImage1;
-    private int profileImage1;
+    private String jobDate1;
+    private String deadlineTime;
+    private String deadline;
+    private String profileImage;
+    private String startDescription;
+    private String startLongitude;
+    private String startLat;
+    private String optLongitude;
+    private String optLat;
+    private String endDescription;
+    private String endLongitude;
+    private String endLat;
 
 
-    public static DetailFragment newInstance(JobsHolder data) {
+    public static DetailFragment newInstance(JobInfo.DataEntity data) {
         DetailFragment fragment = new DetailFragment();
         Bundle args = new Bundle();
         DetailFragment.data = data;
-        args.putString("jobTile", data.getTextJobTitle());
-        args.putString("jobImageUrl", data.getImageJobUrl());
-        args.putLong("jobMapStartPoint", data.getDestinationPoint());
-        args.putLong("jobMapEndPoint", data.getStartPoint());
-        args.putLong("jobMapInterPoint", data.getOptionalIntermediatePoint());
-        args.putString("jobImage", data.getImageJobUrl());
-        args.putString("profileImage", data.getTextProfileImageUrl());
-        args.putString("jobDate", data.getTextJobDate());
-        args.putFloat("jobBudget", data.getTextJobBudget());
-        args.putString("jobDescription", data.getTextJobDescription());
-        args.putString("profileName", data.getTextProfileName());
-        // will be commented
-        args.putInt("jobImage", data.getImageJob());
-        args.putInt("profileImage", data.getImageProfile());
-
+        args.putString(JOB_TILE, data.getJobTitle());
+        args.putString(JOB_IMAGE_URL, data.getProfilePic());
+        args.putString(JOB_MAP_START_LATITUDE, data.getLatitude1());
+        args.putString(JOB_MAP_START_LONGITUDE, data.getLongitude1());
+        args.putString(JOB_MAP_END_LONGITUDE, data.getDestLongitude());
+        args.putString(JOB_MAP_END_LATITUDE, data.getDestLatitude());
+        args.putString(JOB_MAP_OPT_LATITUDE, data.getLatitude2());
+        args.putString(JOB_MAP_OPT_LONGITUDE, data.getLatitude2());
+        args.putString(JOB_BUDGET, data.getBudget());
+        args.putString(PROFILE_IMAGE, data.getProfilePic());
+        args.putString(JOB_DATE, data.getJobDate());
+        args.putString(JOB_DEADLINE, data.getJobDeadlineDate());
+        args.putString(JOB_DEADLINE_TIME, data.getJobDeadlineTime());
+        args.putString(JOB_MAP_START_DESCRIPTION, data.getJobDescription1());
+        args.putString(JOB_MAP_OPT_DESCRIPTION, data.getJobDescription2());
+        args.putString(PROFILE_NAME, data.getName());
         fragment.setArguments(args);
         return fragment;
     }
@@ -76,20 +111,23 @@ public class DetailFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            jobTile = getArguments().getString("jobTile", "");
-            jobImageUrl = getArguments().getString("jobImageUrl", "");
-            jobMapStartPoint = getArguments().getLong("jobMapStartPoint", 0);
-            jobMapEndPoint = getArguments().getLong("jobMapEndPoint", 0);
-            jobMapInterPoint = getArguments().getLong("jobMapInterPoint", 0);
-            jobImage = getArguments().getString("jobImage", "");
-            profileImage = getArguments().getString("profileImage", "");
-            jobDate = getArguments().getString("jobDate", "");
-            jobBudget = getArguments().getFloat("jobBudget", 0.00f);
-            jobDescription = getArguments().getString("jobDescription", "");
-            profileName = getArguments().getString("profileName", "");
-            //will be commented
-            jobImage1 = getArguments().getInt("jobImage", 0);
-            profileImage1 = getArguments().getInt("profileImage", 0);
+            jobTile = getArguments().getString(JOB_TILE, "");
+            jobImageUrl = getArguments().getString(JOB_IMAGE_URL, "");
+            endLat = getArguments().getString(JOB_MAP_END_LATITUDE, "");
+            endLongitude = getArguments().getString(JOB_MAP_END_LONGITUDE, "");
+            endDescription = getArguments().getString(JOB_MAP_OPT_DESCRIPTION, "");
+            optLat = getArguments().getString(JOB_MAP_OPT_LATITUDE, "");
+            optLongitude = getArguments().getString(JOB_MAP_OPT_LONGITUDE, "");
+            startLat = getArguments().getString(JOB_MAP_START_LATITUDE, "");
+            startLongitude = getArguments().getString(JOB_MAP_START_LONGITUDE, "");
+            startDescription = getArguments().getString(JOB_MAP_START_DESCRIPTION, "");
+            profileImage = getArguments().getString(PROFILE_IMAGE, "");
+            deadline = getArguments().getString(JOB_DEADLINE, "");
+            deadlineTime = getArguments().getString(JOB_DEADLINE_TIME, "");
+            jobDate1 = getArguments().getString(JOB_DATE, "");
+            jobBudget = getArguments().getString(JOB_BUDGET, "");
+            profileName = getArguments().getString(PROFILE_NAME, "");
+
         }
     }
 
@@ -107,22 +145,22 @@ public class DetailFragment extends Fragment {
         ImageButton buttonViewJob = (ImageButton) view.findViewById(R.id.button_view_job);
         ImageView imageItem = (ImageView) view.findViewById(R.id.imageViewItem);
         /* setup fragment data*/
-        Picasso.with(getActivity()).load(data.getImageJob()).placeholder(R.drawable.logo).into(imageItem);
-        Picasso.with(userProfilePic.getContext()).load(data.getImageProfile()).placeholder(R.drawable.logo_blue).into(userProfilePic);
-        userProfileName.setText(data.getTextProfileName());
-        jobPostedPeriod.setText(data.getTextJobDate());
-        jobDescription.setText(data.getTextJobDescription());
-        jobTitle.setText(data.getTextJobTitle());
+        Picasso.with(getActivity()).load(AppConfig.WEBSITE_URL + "/" + data.getJobImage1()).placeholder(R.drawable.logo).into(imageItem);
+        Picasso.with(userProfilePic.getContext()).load(AppConfig.WEBSITE_URL + "/" + data.getProfilePic()).placeholder(R.drawable.logo_blue).into(userProfilePic);
+        userProfileName.setText(data.getName());
+        jobPostedPeriod.setText(data.getJobDate());
+        jobDescription.setText(data.getJobDescription1());
+        jobTitle.setText(data.getJobTitle());
         buttonLikeJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Snackbar.make(v, "you liked " + data.getTextJobTitle(), Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(v, "you liked " + data.getJobTitle(), Snackbar.LENGTH_SHORT).show();
             }
         });
         buttonViewJob.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Snackbar.make(v, "Do you want to Bid for " + data.getTextJobTitle(), Snackbar.LENGTH_INDEFINITE).setAction("confirm", new View.OnClickListener() {
+                Snackbar.make(v, "Do you want to Bid for " + data.getJobTitle(), Snackbar.LENGTH_INDEFINITE).setAction("view", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         nextStep(v);
@@ -135,7 +173,20 @@ public class DetailFragment extends Fragment {
     }
 
     private void nextStep(View v) {
+        Intent intent = new Intent(v.getContext(), JobMapActivity.class);
+        intent.putExtra(EXTRA_MAP_START_LATITUDE, Double.parseDouble(startLat));
+        intent.putExtra(EXTRA_MAP_START_LONGITUDE, Double.parseDouble(startLongitude));
+        intent.putExtra(EXTRA_MAP_DEST_LATITUDE, Double.parseDouble(endLat));
+        intent.putExtra(EXTRA_MAP_DEST_LONGITUDE, Double.parseDouble(endLongitude));
 
+        if (!optLat.isEmpty() && !optLongitude.isEmpty()) {
+            intent.putExtra(EXTRA_MAP_HAS_OPTIONAL, true);
+            intent.putExtra(EXTRA_MAP_OPT_LATITUDE, Double.parseDouble(optLat));
+            intent.putExtra(EXTRA_MAP_OPT_LONGITUDE, Double.parseDouble(optLongitude));
+        } else {
+            intent.putExtra(EXTRA_MAP_HAS_OPTIONAL, false);
+        }
+        startActivity(intent);
     }
 
     public void onButtonPressed(Uri uri) {
@@ -161,19 +212,9 @@ public class DetailFragment extends Fragment {
         mListener = null;
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-    public interface OnFragmentInteractionListener {
 
-        public void onFragmentInteraction(Uri uri);
+    public interface OnFragmentInteractionListener {
+        void onFragmentInteraction(Uri uri);
     }
 
 }

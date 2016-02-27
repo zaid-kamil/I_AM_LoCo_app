@@ -1,89 +1,273 @@
 package com.xaidworkz.www.i_am_loco_app.database;
 
+import java.util.List;
+
 /**
  * Created by zaid on 14-02-2016.
  */
 public class LoginInfo {
-    String Login;
-    String Name;
-    String Password;
-    String ProfilePic;
-    String UserType;
-    String LoginDate;
-    String LogoutDate;
-    String LoginTime;
-    String LogoutTime;
 
+    /**
+     * status : success
+     * data : [{"Name":"john fish","Login":"test@test.com","Password":"123","ProfilePic":"../assets/portraits/5.jpg","UserType":"Customer","LoginDate":{"date":"2016-02-11 00:00:00.000000","timezone_type":3,"timezone":"UTC"},"LoginTime":{"date":"2016-02-25 20:14:13.000000","timezone_type":3,"timezone":"UTC"},"LogoutDate":{"date":"2015-10-26 00:00:00.000000","timezone_type":3,"timezone":"UTC"},"LogoutTime":{"date":"2016-02-25 08:13:00.000000","timezone_type":3,"timezone":"UTC"}}]
+     */
 
-    public String getLogin() {
-        return Login;
+    private String status;
+    /**
+     * Name : john fish
+     * Login : test@test.com
+     * Password : 123
+     * ProfilePic : ../assets/portraits/5.jpg
+     * UserType : Customer
+     * LoginDate : {"date":"2016-02-11 00:00:00.000000","timezone_type":3,"timezone":"UTC"}
+     * LoginTime : {"date":"2016-02-25 20:14:13.000000","timezone_type":3,"timezone":"UTC"}
+     * LogoutDate : {"date":"2015-10-26 00:00:00.000000","timezone_type":3,"timezone":"UTC"}
+     * LogoutTime : {"date":"2016-02-25 08:13:00.000000","timezone_type":3,"timezone":"UTC"}
+     */
+
+    private List<DataEntity> data;
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
-    public void setLogin(String login) {
-        Login = login;
+    public void setData(List<DataEntity> data) {
+        this.data = data;
     }
 
-    public String getName() {
-        return Name;
+    public String getStatus() {
+        return status;
     }
 
-    public void setName(String name) {
-        Name = name;
+    public List<DataEntity> getData() {
+        return data;
     }
 
-    public String getPassword() {
-        return Password;
-    }
+    public static class DataEntity {
+        private String Name;
+        private String Login;
+        private String Password;
+        private String ProfilePic;
+        private String UserType;
+        /**
+         * date : 2016-02-11 00:00:00.000000
+         * timezone_type : 3
+         * timezone : UTC
+         */
 
-    public void setPassword(String password) {
-        Password = password;
-    }
+        private LoginDateEntity LoginDate;
+        /**
+         * date : 2016-02-25 20:14:13.000000
+         * timezone_type : 3
+         * timezone : UTC
+         */
 
-    public String getProfilePic() {
-        return ProfilePic;
-    }
+        private LoginTimeEntity LoginTime;
+        /**
+         * date : 2015-10-26 00:00:00.000000
+         * timezone_type : 3
+         * timezone : UTC
+         */
 
-    public void setProfilePic(String profilePic) {
-        ProfilePic = profilePic;
-    }
+        private LogoutDateEntity LogoutDate;
+        /**
+         * date : 2016-02-25 08:13:00.000000
+         * timezone_type : 3
+         * timezone : UTC
+         */
 
-    public String getUserType() {
-        return UserType;
-    }
+        private LogoutTimeEntity LogoutTime;
 
-    public void setUserType(String userType) {
-        UserType = userType;
-    }
+        public void setName(String Name) {
+            this.Name = Name;
+        }
 
-    public String getLoginDate() {
-        return LoginDate;
-    }
+        public void setLogin(String Login) {
+            this.Login = Login;
+        }
 
-    public void setLoginDate(String loginDate) {
-        LoginDate = loginDate;
-    }
+        public void setPassword(String Password) {
+            this.Password = Password;
+        }
 
-    public String getLogoutDate() {
-        return LogoutDate;
-    }
+        public void setProfilePic(String ProfilePic) {
+            this.ProfilePic = ProfilePic;
+        }
 
-    public void setLogoutDate(String logoutDate) {
-        LogoutDate = logoutDate;
-    }
+        public void setUserType(String UserType) {
+            this.UserType = UserType;
+        }
 
-    public String getLoginTime() {
-        return LoginTime;
-    }
+        public void setLoginDate(LoginDateEntity LoginDate) {
+            this.LoginDate = LoginDate;
+        }
 
-    public void setLoginTime(String loginTime) {
-        LoginTime = loginTime;
-    }
+        public void setLoginTime(LoginTimeEntity LoginTime) {
+            this.LoginTime = LoginTime;
+        }
 
-    public String getLogoutTime() {
-        return LogoutTime;
-    }
+        public void setLogoutDate(LogoutDateEntity LogoutDate) {
+            this.LogoutDate = LogoutDate;
+        }
 
-    public void setLogoutTime(String logoutTime) {
-        LogoutTime = logoutTime;
+        public void setLogoutTime(LogoutTimeEntity LogoutTime) {
+            this.LogoutTime = LogoutTime;
+        }
+
+        public String getName() {
+            return Name;
+        }
+
+        public String getLogin() {
+            return Login;
+        }
+
+        public String getPassword() {
+            return Password;
+        }
+
+        public String getProfilePic() {
+            return ProfilePic;
+        }
+
+        public String getUserType() {
+            return UserType;
+        }
+
+        public LoginDateEntity getLoginDate() {
+            return LoginDate;
+        }
+
+        public LoginTimeEntity getLoginTime() {
+            return LoginTime;
+        }
+
+        public LogoutDateEntity getLogoutDate() {
+            return LogoutDate;
+        }
+
+        public LogoutTimeEntity getLogoutTime() {
+            return LogoutTime;
+        }
+
+        public static class LoginDateEntity {
+            private String date;
+            private int timezone_type;
+            private String timezone;
+
+            public void setDate(String date) {
+                this.date = date;
+            }
+
+            public void setTimezone_type(int timezone_type) {
+                this.timezone_type = timezone_type;
+            }
+
+            public void setTimezone(String timezone) {
+                this.timezone = timezone;
+            }
+
+            public String getDate() {
+                return date;
+            }
+
+            public int getTimezone_type() {
+                return timezone_type;
+            }
+
+            public String getTimezone() {
+                return timezone;
+            }
+        }
+
+        public static class LoginTimeEntity {
+            private String date;
+            private int timezone_type;
+            private String timezone;
+
+            public void setDate(String date) {
+                this.date = date;
+            }
+
+            public void setTimezone_type(int timezone_type) {
+                this.timezone_type = timezone_type;
+            }
+
+            public void setTimezone(String timezone) {
+                this.timezone = timezone;
+            }
+
+            public String getDate() {
+                return date;
+            }
+
+            public int getTimezone_type() {
+                return timezone_type;
+            }
+
+            public String getTimezone() {
+                return timezone;
+            }
+        }
+
+        public static class LogoutDateEntity {
+            private String date;
+            private int timezone_type;
+            private String timezone;
+
+            public void setDate(String date) {
+                this.date = date;
+            }
+
+            public void setTimezone_type(int timezone_type) {
+                this.timezone_type = timezone_type;
+            }
+
+            public void setTimezone(String timezone) {
+                this.timezone = timezone;
+            }
+
+            public String getDate() {
+                return date;
+            }
+
+            public int getTimezone_type() {
+                return timezone_type;
+            }
+
+            public String getTimezone() {
+                return timezone;
+            }
+        }
+
+        public static class LogoutTimeEntity {
+            private String date;
+            private int timezone_type;
+            private String timezone;
+
+            public void setDate(String date) {
+                this.date = date;
+            }
+
+            public void setTimezone_type(int timezone_type) {
+                this.timezone_type = timezone_type;
+            }
+
+            public void setTimezone(String timezone) {
+                this.timezone = timezone;
+            }
+
+            public String getDate() {
+                return date;
+            }
+
+            public int getTimezone_type() {
+                return timezone_type;
+            }
+
+            public String getTimezone() {
+                return timezone;
+            }
+        }
     }
 }

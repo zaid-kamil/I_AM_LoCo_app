@@ -8,7 +8,6 @@ import android.content.ContentResolver;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
@@ -43,6 +42,7 @@ import com.squareup.okhttp.Response;
 import com.xaidworkz.www.i_am_loco_app.AppConfig;
 import com.xaidworkz.www.i_am_loco_app.R;
 import com.xaidworkz.www.i_am_loco_app.database.LoginInfo;
+import com.xaidworkz.www.i_am_loco_app.database.PrefManager;
 import com.xaidworkz.www.i_am_loco_app.helpers.Util;
 
 import java.io.IOException;
@@ -50,9 +50,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.Manifest.permission.READ_CONTACTS;
-import static com.xaidworkz.www.i_am_loco_app.AppConfig.IS_LOGGED_IN;
-import static com.xaidworkz.www.i_am_loco_app.AppConfig.USERNAME;
-import static com.xaidworkz.www.i_am_loco_app.AppConfig.USER_LOGIN_PREF;
 
 /**
  * A login screen that offers login via username/password.
@@ -64,15 +61,10 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     private static final int REQUEST_READ_CONTACTS = 0;
 
-
-    private static final String[] DUMMY_CREDENTIALS = new String[]{
-            "xaidmeta@gmail.com:qwerty", "bar@example.com:world"
-    };
     /**
      * Keep track of the login task to ensure we can cancel it if requested.
      */
     private UserLoginTask mAuthTask = null;
-
 
     // UI references.
     private AutoCompleteTextView mUsernameView;
@@ -88,7 +80,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        if (isUserLoggedIn()) {
+        if (PrefManager.getLoginState(this)) {
             jumpToHome();
         }
         inputLayoutUsername = (TextInputLayout) findViewById(R.id.inputLayoutUserName);
@@ -119,13 +111,6 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         mLoginFormView = findViewById(R.id.login_form);
         mProgressView = findViewById(R.id.login_progress);
-    }
-
-    private boolean isUserLoggedIn() {
-
-
-        SharedPreferences userLoginPreferences = getSharedPreferences(USER_LOGIN_PREF, MODE_PRIVATE);
-        return userLoginPreferences.getBoolean(IS_LOGGED_IN, false);
     }
 
     private void populateAutoComplete() {
@@ -177,13 +162,13 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
-
     /**
      * Attempts to sign in or register the account specified by the login form.
      * If there are form errors (invalid username, missing fields, etc.), the
      * errors are presented and no actual login attempt is made.
      */
     private void attemptLogin() {
+
         if (mAuthTask != null) {
             return;
         }
@@ -231,13 +216,11 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
     }
 
     private boolean isEmailValid(String email) {
-        //TODO: Replace this with your own logic
         return email.contains("@");
     }
 
     private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
+        return password.length() > 1;
     }
 
     /**
@@ -245,9 +228,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
      */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
-        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
-        // for very easy animations. If available, use these APIs to fade-in
-        // the progress spinner.
+
         if (VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
             int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
@@ -256,7 +237,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     show ? 0 : 1).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);
+                    /*mLoginFormView.setVisibility(show ? View.GONE : View.VISIBLE);*/
                 }
             });
 
@@ -265,7 +246,7 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
                     show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                   /* mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);*/
                 }
             });
         } else {
@@ -368,6 +349,8 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
 
         private final String mUsername;
         private final String mPassword;
+        private LoginInfo loginInfo;
+
 
         UserLoginTask(String username, String password) {
             mUsername = username;
@@ -375,57 +358,65 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
 
 
-
-
         @Override
         protected LoginInfo doInBackground(Void... params) {
-            LoginInfo loginInfo = null;
-            final boolean[] loginStatus = {false};
-            final String[] data = {""};
-            OkHttpClient client= new OkHttpClient();
-            RequestBody loginForm= new FormEncodingBuilder().add("loginId",mUsername).add("password",mPassword).build();
-            Request request= new Request.Builder().url(AppConfig.URL_LOGIN).post(loginForm).build();
-            Call call= client.newCall(request);
-            if(Util.Operations.isOnline(getApplicationContext())){
+
+
+            OkHttpClient client = new OkHttpClient();
+            RequestBody loginForm = new FormEncodingBuilder().add("app", "yes").add("loginId", mUsername).add("password", mPassword).build();
+            Request request = new Request.Builder().url(AppConfig.URL_LOGIN).post(loginForm).build();
+            Call call = client.newCall(request);
+            if (Util.Operations.isOnline(getApplicationContext())) {
                 call.enqueue(new Callback() {
                     @Override
                     public void onFailure(Request request, IOException e) {
-                        loginStatus[0] =false;
+                        handleError(e);
                     }
 
                     @Override
                     public void onResponse(Response response) throws IOException {
                         String jsonData = response.body().string();
-                        if(response.isSuccessful()){
-                            Gson gson= new Gson();
-                            LoginInfo loginInfo = gson.fromJson(jsonData, LoginInfo.class);
 
+                        Gson gson = new Gson();
+                        if (response.isSuccessful()) {
+                            loginInfo = gson.fromJson(jsonData, LoginInfo.class);
+                            handleLoginDetails(loginInfo);
+
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    showProgress(false);
+                                    inputLayoutUsername.setError("could not validate. Try again");
+                                }
+                            });
                         }
                     }
                 });
             }
-            for (String credential : DUMMY_CREDENTIALS) {
+            /*for (String credential : DUMMY_CREDENTIALS) {
                 String[] pieces = credential.split(":");
                 if (pieces[0].equals(mUsername)) {
                     // Account exists, return true if the password matches.
-                    loginStatus[0]= pieces[1].equals(mPassword);
+                    loginStatus[0] = pieces[1].equals(mPassword);
                 }
-            }
+            }*/
 
-            return loginInfo;
+            return null;
 
         }
-        @Override
+
+        /*@Override
         protected void onPostExecute(LoginInfo loginInfo) {
             mAuthTask = null;
-            if (loginInfo !=null) {
-                generateNewUsersPrefs(mUsername); jumpToHome();
+            if (loginInfo != null) {
+                generateNewUsersPrefs(mUsername);
+                jumpToHome();
             } else {
-                showProgress(false);
                 inputLayoutPassword.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
             }
-        }
+        }*/
 
         @Override
         protected void onCancelled() {
@@ -434,14 +425,42 @@ public class LoginActivity extends AppCompatActivity implements LoaderCallbacks<
         }
     }
 
+    private void handleError(IOException e) {
+        showProgress(false);
+    }
+
+    private void handleLoginDetails(final LoginInfo loginInfo) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (loginInfo != null) {
+                    if (loginInfo.getStatus().equals("success")) {
+                        Intent home = new Intent(LoginActivity.this, MainActivity.class);
+                        generateNewUsersPrefs(loginInfo);
+                        home.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(home);
+                        finish();
+                    }
+                }
+                showProgress(false);
+                inputLayoutUsername.setError("could not validate. Try again");
+            }
+        });
+        mAuthTask = null;
+    }
+
     private void jumpToHome() {
         startActivity(new Intent(LoginActivity.this, MainActivity.class));
         finish();
     }
 
-    private void generateNewUsersPrefs(String username) {
-        SharedPreferences userLoginPreferences = getSharedPreferences(USER_LOGIN_PREF, MODE_PRIVATE);
-        userLoginPreferences.edit().putString(USERNAME, username).putBoolean(IS_LOGGED_IN, true).apply();
+    private void generateNewUsersPrefs(LoginInfo loginInfo) {
+        PrefManager.setUserName(LoginActivity.this, loginInfo.getData().get(0).getName());
+        PrefManager.setLoginState(LoginActivity.this, true);
+        PrefManager.setUserId(LoginActivity.this, loginInfo.getData().get(0).getLogin());
+        PrefManager.setProfilePicUrl(LoginActivity.this, loginInfo.getData().get(0).getProfilePic());
+        PrefManager.setUserType(LoginActivity.this, loginInfo.getData().get(0).getUserType());
+        PrefManager.setPassword(LoginActivity.this, loginInfo.getData().get(0).getPassword());
     }
 }
 

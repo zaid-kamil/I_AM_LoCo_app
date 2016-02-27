@@ -4,7 +4,6 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
@@ -19,9 +18,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.xaidworkz.www.i_am_loco_app.R;
+import com.xaidworkz.www.i_am_loco_app.database.PrefManager;
 
-import static com.xaidworkz.www.i_am_loco_app.AppConfig.IS_LOGGED_IN;
-import static com.xaidworkz.www.i_am_loco_app.AppConfig.USER_LOGIN_PREF;
 
 public class LauncherActivity extends AppCompatActivity {
 
@@ -68,14 +66,16 @@ public class LauncherActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Boolean status) {
-            if (status.TRUE){
-                if (isUserLoggedIn()) {
+            if (status) {
+                if (PrefManager.getLoginState(LauncherActivity.this)) {
                     jumpToHome();
                 } else {
                     jumpToLogin();
                 }
+
             }else{
                 Toast.makeText(LauncherActivity.this, "No Internet Connection", Toast.LENGTH_SHORT).show();
+                finish();
             }
         }
 
@@ -106,10 +106,6 @@ public class LauncherActivity extends AppCompatActivity {
         finish();
     }
 
-    private boolean isUserLoggedIn() {
-        SharedPreferences userLoginPreferences = getSharedPreferences(USER_LOGIN_PREF, MODE_PRIVATE);
-        return userLoginPreferences.getBoolean(IS_LOGGED_IN, false);
-    }
 
     private void jumpToHome() {
         startActivity(new Intent(LauncherActivity.this, MainActivity.class));

@@ -1,5 +1,6 @@
 package com.xaidworkz.www.i_am_loco_app.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -18,18 +19,23 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.eftimoff.viewpagertransformers.AccordionTransformer;
+import com.eftimoff.viewpagertransformers.ForegroundToBackgroundTransformer;
+import com.google.gson.Gson;
+import com.squareup.okhttp.Call;
+import com.squareup.okhttp.Callback;
+import com.squareup.okhttp.OkHttpClient;
+import com.squareup.okhttp.Request;
+import com.squareup.okhttp.Response;
+import com.xaidworkz.www.i_am_loco_app.AppConfig;
 import com.xaidworkz.www.i_am_loco_app.R;
+import com.xaidworkz.www.i_am_loco_app.database.JobInfo;
 import com.xaidworkz.www.i_am_loco_app.fragments.DetailFragment;
-import com.xaidworkz.www.i_am_loco_app.helpers.BaseRecyclerViewAdapter;
-import com.xaidworkz.www.i_am_loco_app.helpers.JobsHolder;
+import com.xaidworkz.www.i_am_loco_app.helpers.Util;
 
-import java.util.ArrayList;
+import java.io.IOException;
 import java.util.List;
-
-import static com.xaidworkz.www.i_am_loco_app.AppConfig.USERNAME;
-import static com.xaidworkz.www.i_am_loco_app.AppConfig.USER_LOGIN_PREF;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, DetailFragment.OnFragmentInteractionListener {
 
@@ -37,27 +43,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private DrawerLayout drawerRoot;
     private SharedPreferences userLoginPreferences;
     private String prefUserEmail;
+    private ProgressDialog dialog;
+    private List<JobInfo.DataEntity> data;
+    private ViewPager itemsPager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        userLoginPreferences=getSharedPreferences(USER_LOGIN_PREF,MODE_PRIVATE);
-        if (!isUserLoggedIn()) {
-            jumpToLogin();
-        } else {
-            prefUserEmail = userLoginPreferences.getString(USERNAME, "");
-        }
+
+        getJobData();
         initViews();
-    }
-
-    private boolean isUserLoggedIn() {
-        return true;
-    }
-
-    private void jumpToLogin() {
-        startActivity(new Intent(MainActivity.this, LoginActivity.class));
-        finish();
     }
 
 
@@ -66,11 +63,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavigationView nav = (NavigationView) findViewById(R.id.nav);
         drawerRoot = (DrawerLayout) findViewById(R.id.drawerRoot);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        ViewPager itemsPager = (ViewPager) findViewById(R.id.itemsPager);
-        ItemsPagerAdapter pagerAdapter = new ItemsPagerAdapter(getSupportFragmentManager());
-        itemsPager.setAdapter(pagerAdapter);
-        itemsPager.setPageTransformer(true, new AccordionTransformer());
-        /* RecyclerView recyclerView = (RecyclerView) findViewById(R.id.RecyclerHomeList);*/
+        itemsPager = (ViewPager) findViewById(R.id.itemsPager);
+
         /*toolbar setup*/
         setSupportActionBar(toolbar);
 
@@ -89,12 +83,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerRoot.setDrawerListener(drawerToggle);
         drawerToggle.syncState();
 
-        /*recycler*/
-
-        BaseRecyclerViewAdapter adapter = new BaseRecyclerViewAdapter(this, R.layout.home_simple_item_1, getDummyData());
-        /*recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        recyclerView.addItemDecoration(new SpacesItemDecoration(1));
-        recyclerView.setAdapter(adapter);*/
 
     }
 
@@ -108,33 +96,92 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         userEmail.setText(prefUserEmail);
     }
 
-    /*test list*/
-    private List<?> getDummyData() {
-        ArrayList<JobsHolder> list = new ArrayList<JobsHolder>();
-        list.add(new JobsHolder(R.drawable.dummy_portrait_1, "Ceram gomez", "buy me grocery", "go to downtown and buy me mixed vegies", "3 days ago", R.drawable.dummy_portrait_2));
-        list.add(new JobsHolder(R.drawable.thumb2, "Nonee vistra", "get me movie tickets", "go to downtown and buy me mixed vegies", "3 days ago", R.drawable.dummy_portrait_5));
-        list.add(new JobsHolder(R.drawable.thumb4, "Sam alex", "buy me grocery", "go to downtown and buy me mixed vegies", "3 days ago", R.drawable.dummy_portrait_4));
-        return list;
+
+    private void getJobData() {
+        dialog = new ProgressDialog(this);
+        dialog.setCancelable(false);
+        dialog.setMessage("please wait...");
+        dialog.show();
+        try {
+            OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .url(AppConfig.URL_JOBS_LIST)
+                    .build();
+            Response response = null;
+
+            Call call = client.newCall(request);
+            if (Util.Operations.isOnline(getApplicationContext())) {
+                call.enqueue(new Callback() {
+                    @Override
+                    public void onFailure(Request request, IOException e) {
+                        Toast.makeText(MainActivity.this, "Error fetching job details", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onResponse(Response response) throws IOException {
+                        String jsonData = response.body().string();
+                        Gson gson = new Gson();
+                        JobInfo jobInfo = gson.fromJson(jsonData, JobInfo.class);
+                        if (response.isSuccessful()) {
+                            dialog.dismiss();
+                            setDataList(jobInfo.getData());
+
+                        }
+                    }
+                });
+
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    private List<?> getRealData() {
-        ArrayList<JobsHolder> list = new ArrayList<JobsHolder>();
-         return list;
+    private void setDataList(final List<JobInfo.DataEntity> data) {
+        this.data = data;
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (data != null) {
+                    ItemsPagerAdapter pagerAdapter = new ItemsPagerAdapter(getSupportFragmentManager());
+                    itemsPager.setAdapter(pagerAdapter);
+                    itemsPager.setPageTransformer(true, new ForegroundToBackgroundTransformer());
+                }
+            }
+        });
     }
 
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
         switch (menuItem.getItemId()) {
+            case R.id.nav_view_jobs:
+                startJobHistory();
+                break;
             case R.id.nav_view_people:
-
-
-                return true;
+                showsUsersList();
+                break;
             case R.id.nav_view_profile:
-                return true;
+                showUsersProfile();
+                break;
         }
         drawerRoot.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private void startJobHistory() {
+        Intent intent = new Intent(this, UserJobsActivity.class);
+        startActivity(intent);
+    }
+
+    private void showUsersProfile() {
+        Intent intent = new Intent(this, ViewProfileActivity.class);
+        startActivity(intent);
+    }
+
+    private void showsUsersList() {
+        Intent intent = new Intent(this, UsersActivity.class);
+        startActivity(intent);
     }
 
     @Override
@@ -166,21 +213,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         public ItemsPagerAdapter(FragmentManager fm) {
             super(fm);
+
         }
 
         @Override
         public Fragment getItem(int position) {
-            return DetailFragment.newInstance((JobsHolder) getDummyData().get(position));
+
+            return DetailFragment.newInstance(data.get(position));
         }
 
         @Override
         public int getCount() {
-            return getDummyData().size();
+            return data.size();
         }
 
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return ((JobsHolder) getDummyData().get(position)).getTextProfileName();
-        }
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }

@@ -53,5 +53,6 @@ dependencies {
     compile 'com.google.android.gms:play-services-wallet:8.4.0'
     compile 'com.google.android.gms:play-services:8.4.0'
     compile 'com.google.android.gms:play-services-base:8.4.0'
-    compile 'com.google.code.gson:gson:2.2.4'
+    compile 'com.google.code.gson:gson:2.4'
+    compile 'com.mcxiaoke.volley:library:1.0.19'
 }

@@ -1,8 +1,8 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/wrapperMap"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <fragment
@@ -11,21 +11,20 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".activities.MapActivity" />
+
     <android.support.v7.widget.CardView
+        android:id="@+id/card"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal|bottom"
-        android:layout_marginBottom="20dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
+        android:layout_gravity="center_horizontal|top"
+        android:layout_margin="8dp"
         android:elevation="100dp"
         app:cardBackgroundColor="@android:color/white"
         app:cardCornerRadius="8dp">
 
         <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="match_parent"
-            >
+            android:layout_height="match_parent">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -34,15 +33,16 @@
                 android:padding="20dp">
 
                 <AutoCompleteTextView
+                    android:textSize="12dp"
                     android:id="@+id/start"
-                    android:layout_width="fill_parent"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="10dp"
+
                     android:background="@android:color/transparent"
-                    android:hint="Choose a starting point..." />
+                    android:hint="Starting Address" />
 
                 <View
-                    android:layout_width="match_parent"
+                    android:layout_width="384dp"
                     android:layout_height="5dp"
                     android:layout_marginBottom="5dp"
                     android:layout_marginRight="50dp"
@@ -50,20 +50,41 @@
                     android:background="@drawable/dotted" />
 
                 <AutoCompleteTextView
+                    android:textSize="12dp"
                     android:id="@+id/destination"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/transparent"
-                    android:hint="Choose a destination..." />
+                    android:hint="Destination address" />
+
+                <View
+
+                    android:layout_width="384dp"
+                    android:layout_height="5dp"
+                    android:layout_marginBottom="5dp"
+                    android:layout_marginRight="50dp"
+                    android:layout_marginTop="5dp"
+                    android:background="@drawable/dotted" />
+
+                <AutoCompleteTextView
+                    android:textSize="12dp"
+                    android:id="@+id/optional"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@android:color/transparent"
+                    android:hint="Optional address" />
             </LinearLayout>
+
             <ImageView
                 android:id="@+id/send"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="20dp"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
                 android:layout_alignParentRight="true"
-                android:layout_width="36dp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="8dp"
+                android:padding="4dp"
                 android:src="@drawable/ic_dark_pointer"
-                android:layout_height="36dp" />
+                android:visibility="gone" />
 
         </RelativeLayout>
     </android.support.v7.widget.CardView>
